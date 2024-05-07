@@ -32,7 +32,6 @@ You will be charged a small amount (typically around $0.01/month) for the Fireba
 
 This extension uses other Firebase and Google Cloud Platform services, which have associated charges if you exceed the service's no-cost tier:
 
-- [Google Cloud Text-to-Speech API](https://cloud.google.com/text-to-speech#section-11)
 - Cloud Firestore
 - Cloud Storage
 - Cloud Functions (Node.js 14+ runtime. See [FAQs](https://firebase.google.com/support/faq#extensions-pricing))

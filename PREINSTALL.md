@@ -1,22 +1,21 @@
-<!-- 
-This file provides your users an overview of your extension. All content is optional, but this is the recommended format. Your users will see the contents of this file when they run the `firebase ext:info` command.
+This extension converts text from Firestore documents into speech using the ElevenLabs Text-to-Speech API. This extension is modeled after the Text to Speech extension from the Google Cloud team, but uses ElevenLabs API instead of the Google Cloud Text-to-Speech API.
 
-Include any important functional details as well as a brief description for any additional setup required by the user (both pre- and post-installation).
+Upon install you will be asked to provide a Firestore collection path, a Storage path, and an ElevenLabs API key. Any document writes to this collection will trigger a Cloud Function that does the following:
 
-Learn more about writing a PREINSTALL.md file in the docs:
-https://firebase.google.com/docs/extensions/publishers/user-documentation#writing-preinstall
--->
+- Generates an audio version of the text using the specified ElevenLabs voice
+- Stores the audio file in Cloud Storage at the specified path
+- Writes the path to the Storage object back in the same Firestore document
 
-Use this extension to send a friendly greeting.
-
-When triggered by an HTTP request, this extension responds with your specified friendly greeting.
-
-<!-- We recommend keeping the following section to explain how billing for Firebase Extensions works -->
 # Billing
 
-This extension uses other Firebase or Google Cloud Platform services which may have associated charges:
+Through the use of the ElevenLabs API (as made possible by the API key you provide), this extension will incur costs which will be billed to your ElevenLabs account and will not be visible in the Google Cloud Console or Firebase Console.
 
-<!-- List all products the extension interacts with -->
-- Cloud Functions
+To install an extension, your project must be on the Blaze (pay as you go) plan.
 
-When you use Firebase Extensions, you're only charged for the underlying resources that you use. A paid-tier billing plan is only required if the extension uses a service that requires a paid-tier plan, for example calling to a Google Cloud Platform API or making outbound network requests to non-Google services. All Firebase services offer a free tier of usage. [Learn more about Firebase billing.](https://firebase.google.com/pricing)
+You will be charged a small amount (typically around $0.01/month) for the Firebase resources required by this extension (even if it is not used).
+
+This extension uses other Firebase and Google Cloud Platform services, which have associated charges if you exceed the service's no-cost tier:
+
+- Cloud Firestore
+- Cloud Storage
+- Cloud Functions (Node.js 14+ runtime. See [FAQs](https://firebase.google.com/support/faq#extensions-pricing))

@@ -1,29 +1,31 @@
-<!-- 
-This file provides your users an overview of how to use your extension after they've installed it. All content is optional, but this is the recommended format. Your users will see the contents of this file in the Firebase console after they install the extension.
+## See it in action
 
-Include instructions for using the extension and any important functional details. Also include **detailed descriptions** for any additional post-installation setup required by the user.
+This extension will automatically convert text from Firestore documents into speech and save the generated audio files in Cloud Storage for Firebase.
 
-Reference values for the extension instance using the ${param:PARAMETER_NAME} or ${function:VARIABLE_NAME} syntax.
-Learn more in the docs: https://firebase.google.com/docs/extensions/publishers/user-documentation#reference-in-postinstall
+To use this extension, ensure that each document in the specified Firestore collection contains a text field with the content you want to convert to speech.
 
-Learn more about writing a POSTINSTALL.md file in the docs:
-https://firebase.google.com/docs/extensions/publishers/user-documentation#writing-postinstall
--->
+If you enabled per-document overrides during installation, you can also include fields such as outputFormat, and voiceId in the document for customization.
 
-# See it in action
+## Example Usage
 
-You can test out this extension right away!
+```javascript
+admin.firestore().collection("${param:COLLECTION_PATH}").add({
+  text: "Hello, world!",
+  outputFormat: "mp3_22050_32", // Optional if per-document overrides are enabled
+  voiceId: "pNInz6obpgDQGcFmaJgB", // Optional if per-document overrides are enabled
+});
+```
 
-Visit the following URL:
-${function:greetTheWorld.url}
+## Access generated audio files
 
-# Using the extension
+Once the extension is installed, it will automatically process new documents in the ${param:COLLECTION_PATH} collection and store the resulting audio files in your `${param:BUCKET_NAME}`Cloud Storage bucket at the`${param:STORAGE_PATH}` path.
 
-When triggered by an HTTP request, this extension responds with the following specified greeting: "${param:GREETING} World from ${param:EXT_INSTANCE_ID}".
+The files will be named using the document ID with an appropriate file extension (e.g., .mp3 for MP3 files).
 
-To learn more about HTTP functions, visit the [functions documentation](https://firebase.google.com/docs/functions/http-events).
+## Error handling
 
-<!-- We recommend keeping the following section to explain how to monitor extensions with Firebase -->
-# Monitoring
+If there are any errors during the text-to-speech conversion process, the extension will log the error message in the Cloud Functions logs. Make sure to monitor these logs and handle any errors appropriately in your application.
+
+## Monitoring
 
 As a best practice, you can [monitor the activity](https://firebase.google.com/docs/extensions/manage-installed-extensions#monitor) of your installed extension, including checks on its health, usage, and logs.
