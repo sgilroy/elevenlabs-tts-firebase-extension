@@ -2,26 +2,21 @@
 # https://firebase.google.com/docs/extensions/reference/extension-yaml
 
 # Identifier for your extension
-# TODO: Replace this with an descriptive name for your extension.
-name: greet-the-world  
-version: 0.0.1  # Follow semver versioning
-specVersion: v1beta  # Version of the Firebase Extensions specification
+name: elevenlabs-tts-firebase-extension
+version: 1.0.0
+specVersion: v1beta # Version of the Firebase Extensions specification
 
 # Friendly display name for your extension (~3-5 words)
-displayName: Greet the world
+displayName: ElevenLabs TTS
 
 # Brief description of the task your extension performs (~1 sentence)
 description: >-
-  Sends the world a greeting.
+  Converts Firestore documents to audio files stored in Cloud Storage using ElevenLabs generative voice AI.
 
-license: Apache-2.0  # https://spdx.org/licenses/
+license: Apache-2.0 # https://spdx.org/licenses/
 
-# Public URL for the source code of your extension.
-# TODO:  Replace this with your GitHub repo.
-sourceUrl: https://github.com/ORG_OR_USER/REPO_NAME
+sourceUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension
 
-# Specify whether a paid-tier billing plan is required to use your extension.
-# Learn more in the docs: https://firebase.google.com/docs/extensions/reference/extension-yaml#billing-required-field
 billingRequired: true
 
 # In an `apis` field, list any Google APIs (like Cloud Translation, BigQuery, etc.)
@@ -32,19 +27,27 @@ billingRequired: true
 # In a `roles` field, list any IAM access roles required for your extension to operate.
 # Learn more in the docs:
 # https://firebase.google.com/docs/extensions/reference/extension-yaml#roles-field
+roles:
+  - role: datastore.user
+    reason: Allows the extension to write the audio file paths to Cloud Firestore.
+  - role: storage.objectAdmin
+    reason: Allows the extension to write audio files to Cloud Storage.
 
 # In the `resources` field, list each of your extension's functions, including the trigger for each function.
 # Learn more in the docs:
 # https://firebase.google.com/docs/extensions/reference/extension-yaml#resources-field
 resources:
-  - name: greetTheWorld
+  - name: elevenLabsTextToSpeech
     type: firebaseextensions.v1beta.function
-    description: >-
-      HTTP request-triggered function that responds with a specified greeting message
+    description:
+      Processes document changes in the specified Cloud Firestore collection,
+      writing synthesized natural speech files to Cloud Storage
     properties:
-      # httpsTrigger is used for an HTTP triggered function.
-      httpsTrigger: {}
-      runtime: "nodejs16"
+      location: ${param:LOCATION}
+      runtime: nodejs18
+      eventTrigger:
+        eventType: providers/cloud.firestore/eventTypes/document.write
+        resource: projects/${param:PROJECT_ID}/databases/(default)/documents/${param:COLLECTION_PATH}/{id}
 
 # In the `params` field, set up your extension's user-configured parameters.
 # Learn more in the docs:
@@ -59,3 +62,143 @@ params:
     default: Hello
     required: true
     immutable: false
+
+  - param: LOCATION
+    label: Cloud Functions location
+    description: >-
+      Where do you want to deploy the functions created for this extension? You
+      usually want a location close to your database. For help selecting a
+      location, refer to the [location selection
+      guide](https://firebase.google.com/docs/functions/locations).
+    type: select
+    options:
+      - label: Iowa (us-central1)
+        value: us-central1
+      - label: South Carolina (us-east1)
+        value: us-east1
+      - label: Northern Virginia (us-east4)
+        value: us-east4
+      - label: Los Angeles (us-west2)
+        value: us-west2
+      - label: Salt Lake City (us-west3)
+        value: us-west3
+      - label: Las Vegas (us-west4)
+        value: us-west4
+      - label: Warsaw (europe-central2)
+        value: europe-central2
+      - label: Belgium (europe-west1)
+        value: europe-west1
+      - label: London (europe-west2)
+        value: europe-west2
+      - label: Frankfurt (europe-west3)
+        value: europe-west3
+      - label: Zurich (europe-west6)
+        value: europe-west6
+      - label: Taiwan (asia-east1)
+        value: asia-east1
+      - label: Hong Kong (asia-east2)
+        value: asia-east2
+      - label: Tokyo (asia-northeast1)
+        value: asia-northeast1
+      - label: Osaka (asia-northeast2)
+        value: asia-northeast2
+      - label: Seoul (asia-northeast3)
+        value: asia-northeast3
+      - label: Mumbai (asia-south1)
+        value: asia-south1
+      - label: Singapore (asia-southeast1)
+        value: asia-southeast1
+      - label: Jakarta (asia-southeast2)
+        value: asia-southeast2
+      - label: Montreal (northamerica-northeast1)
+        value: northamerica-northeast1
+      - label: Sao Paulo (southamerica-east1)
+        value: southamerica-east1
+      - label: Sydney (australia-southeast1)
+        value: australia-southeast1
+    default: us-central1
+    required: true
+    immutable: true
+
+  - param: COLLECTION_PATH
+    label: Collection path
+    description: >
+      What collection path contains documents with text you want to convert?
+    example: docs_to_convert
+    validationRegex: "^[^/]+(/[^/]+/[^/]+)*$"
+    validationErrorMessage: Must be a valid Cloud Firestore Collection
+    type: string
+    required: true
+
+  - param: BUCKET_NAME
+    label: Storage bucket name
+    description: >
+      In which storage bucket do you want to keep the generated audio files?
+    type: selectResource
+    resourceType: storage.googleapis.com/Bucket
+    example: my-project-12345.appspot.com
+    validationRegex: ^([0-9a-z_.-]*)$
+    validationErrorMessage: Invalid storage bucket
+    default: ${STORAGE_BUCKET}
+    required: true
+
+  - param: STORAGE_PATH
+    label: Storage path
+    description: >
+      What is the location in your storage bucket you would like to keep
+      the generated audio files? By default this will be the root of the bucket.
+    type: string
+    required: false
+
+  - param: OUTPUT_FORMAT
+    label: Output Format
+    description: >-
+      Output format of the generated audio.
+    type: select
+    options:
+      - label: MP3 22050Hz 32kbps
+        value: mp3_22050_32
+      - label: MP3 44100Hz 32kbps
+        value: mp3_44100_32
+      - label: MP3 44100Hz 64kbps
+        value: mp3_44100_64
+      - label: MP3 44100Hz 96kbps
+        value: mp3_44100_96
+      - label: MP3 44100Hz 128kbps
+        value: mp3_44100_128
+      - label: MP3 44100Hz 192kbps
+        value: mp3_44100_192
+      - label: PCM 16000Hz
+        value: pcm_16000
+      - label: PCM 22050Hz
+        value: pcm_22050
+      - label: PCM 24000Hz
+        value: pcm_24000
+      - label: PCM 44100Hz
+        value: pcm_44100
+      - label: μ-law 8000Hz
+        value: ulaw_8000
+    default: mp3_44100_128
+    required: true
+
+  - param: ENABLE_PER_DOCUMENT_OVERRIDES
+    label: Enable per document overrides.
+    description: >-
+      If set to \"Yes\", options for converting audio will be overwritten  by
+      fields in the document containing the text to be converted.
+    type: select
+    options:
+      - label: Yes
+        value: yes
+      - label: No
+        value: no
+    default: no
+    required: true
+
+  - param: VOICE_ID
+    label: Voice ID
+    description: >
+      Voice ID to be used. This will override other voice selection parameters.
+      You can use the Voices API https://api.elevenlabs.io/v1/voices to list all available voices.
+    type: string
+    required: false

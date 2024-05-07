@@ -36,7 +36,7 @@ This extension uses other Firebase and Google Cloud Platform services, which hav
 
 - Cloud Firestore
 - Cloud Storage
-- Cloud Functions (Node.js 14+ runtime. See [FAQs](https://firebase.google.com/support/faq#extensions-pricing))
+- Cloud Functions (Node.js 18+ runtime. See [FAQs](https://firebase.google.com/support/faq#extensions-pricing))
 
 ## Configuration Parameters
 
