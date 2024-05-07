@@ -1,3 +1,3 @@
 ## Version 1.0.0
 
-- Initial Version
+- Initial release of the _ElevenLabs TTS_ extension.
