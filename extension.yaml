@@ -2,7 +2,7 @@
 # https://firebase.google.com/docs/extensions/reference/extension-yaml
 
 # Identifier for your extension
-name: elevenlabs-tts-firebase-extension
+name: firestore-elevenlabs-tts
 version: 1.0.0
 specVersion: v1beta # Version of the Firebase Extensions specification
 

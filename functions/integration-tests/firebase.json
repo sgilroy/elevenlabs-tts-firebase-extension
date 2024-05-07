@@ -15,7 +15,7 @@
     "singleProjectMode": true
   },
   "extensions": {
-    "elevenlabs-tts-firebase-extension": "../.."
+    "firestore-elevenlabs-tts": "../.."
   },
   "storage": {
     "rules": "storage.rules"
