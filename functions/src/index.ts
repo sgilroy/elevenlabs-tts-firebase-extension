@@ -1,26 +1,72 @@
-/*
- * This template contains a HTTP function that responds
- * with a greeting when called
- *
- * Reference PARAMETERS in your functions code with:
- * `process.env.<parameter-name>`
- * Learn more about building extensions in the docs:
- * https://firebase.google.com/docs/extensions/publishers
- */
-
+import { ElevenLabsClient } from "elevenlabs";
+import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
+import * as stream from "stream";
+import config from "./config";
+import { GenerateAudioRequest } from "./types";
+import { buildRequest, BuildRequestOptions, getFileExtension } from "./util";
 
-exports.greetTheWorld = functions.https.onRequest(
-  (req: functions.Request, res: functions.Response) => {
-    // Here we reference a user-provided parameter
-    // (its value is provided by the user during installation)
-    const consumerProvidedGreeting = process.env.GREETING;
+const logger = functions.logger;
 
-    // And here we reference an auto-populated parameter
-    // (its value is provided by Firebase after installation)
-    const instanceId = process.env.EXT_INSTANCE_ID;
+admin.initializeApp();
 
-    const greeting = `${consumerProvidedGreeting} World from ${instanceId}`;
+const elevenlabs = new ElevenLabsClient({
+  apiKey: config.elevenLabsApiKey, // Defaults to process.env.ELEVENLABS_API_KEY
+});
 
-    res.send(greeting);
+logger.log("Initializing text-to-speech extension with config:", config);
+
+export const elevenLabsTextToSpeech = functions.firestore
+  .document(`${config.collectionPath}/{docId}`)
+  .onCreate(async (snap) => {
+    if (snap.data().text) {
+      const { text, outputFormat, modelId, voice } = snap.data() as BuildRequestOptions;
+
+      const request = config.enablePerDocumentOverrides
+        ? buildRequest({
+            text,
+            outputFormat,
+            modelId,
+            voice,
+          })
+        : buildRequest({ text });
+
+      const stream = await processText(request);
+      if (stream && stream.readableLength) {
+        const fileExtension = getFileExtension(outputFormat || config.outputFormat);
+
+        const fileName = config.storagePath
+          ? `${config.storagePath}/${snap.id}${fileExtension}`
+          : `${snap.id}${fileExtension}`;
+
+        const bucket = admin.storage().bucket(config.bucketName);
+
+        const file = bucket.file(fileName);
+
+        await new Promise<void>((resolve, reject) => {
+          stream.pipe(file.createWriteStream()).on("error", reject).on("finish", resolve);
+        });
+
+        await snap.ref.update({
+          audioPath: `gs://${bucket.name}/${fileName}`,
+        });
+
+        return;
+      }
+    }
+    return;
   });
+
+async function processText(request: GenerateAudioRequest) {
+  let response: stream.Readable;
+
+  // Performs the text-to-speech request
+  try {
+    logger.log("Generating audio with request:", request);
+    response = await elevenlabs.generate(request);
+  } catch (e) {
+    logger.error(e);
+    throw e;
+  }
+  return response;
+}

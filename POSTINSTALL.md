@@ -4,7 +4,7 @@ This extension will automatically convert text from Firestore documents into spe
 
 To use this extension, ensure that each document in the specified Firestore collection contains a text field with the content you want to convert to speech.
 
-If you enabled per-document overrides during installation, you can also include fields such as outputFormat, and voiceId in the document for customization.
+If you enabled per-document overrides during installation, you can also include fields such as outputFormat and voice in the document for customization.
 
 ## Example Usage
 
@@ -12,7 +12,7 @@ If you enabled per-document overrides during installation, you can also include 
 admin.firestore().collection("${param:COLLECTION_PATH}").add({
   text: "Hello, world!",
   outputFormat: "mp3_22050_32", // Optional if per-document overrides are enabled
-  voiceId: "pNInz6obpgDQGcFmaJgB", // Optional if per-document overrides are enabled
+  voice: "Clyde", // Optional if per-document overrides are enabled
 });
 ```
 
