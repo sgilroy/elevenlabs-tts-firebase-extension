@@ -37,6 +37,14 @@ roles:
 # Learn more in the docs:
 # https://firebase.google.com/docs/extensions/reference/extension-yaml#resources-field
 resources:
+  - name: greetTheWorld
+    type: firebaseextensions.v1beta.function
+    description: >-
+      HTTP request-triggered function that responds with a specified greeting message
+    properties:
+      # httpsTrigger is used for an HTTP triggered function.
+      httpsTrigger: {}
+      runtime: "nodejs16"
   - name: elevenLabsTextToSpeech
     type: firebaseextensions.v1beta.function
     description:
