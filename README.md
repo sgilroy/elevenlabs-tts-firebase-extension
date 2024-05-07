@@ -10,6 +10,8 @@
 - Stores the audio file in Cloud Storage at the specified path
 - Writes the path to the Storage object back in the same Firestore document
 
+Note: this is a third-party extension and is not officially supported by ElevenLabs or by Google.
+
 ## Features
 
 - **Realistic Voice Synthesis**: ElevenLabs offers highly realistic AI-generated voices that can bring text to life in a natural way. This extension allows easily generating lifelike speech from text stored in Firestore.
