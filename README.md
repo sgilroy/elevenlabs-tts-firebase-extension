@@ -45,6 +45,8 @@ This extension uses other Firebase and Google Cloud Platform services, which hav
 - Collection path: The Firestore collection path that contains documents with text to convert to speech
 - Storage bucket name: The Cloud Storage bucket where converted speech audio files will be stored
 - Storage path: The path in the Storage bucket where audio files will be saved (defaults to bucket root)
+- Output format: The format of the audio file to generate (defaults to MP3)
+- Model ID: The ID of the ElevenLabs model to use for speech synthesis
 - Voice: The ID of the ElevenLabs voice to use for speech synthesis
 - Enable per document overrides: If set to \"Yes\", options for converting audio will be overwritten by fields in the document containing the text to be converted.
 
