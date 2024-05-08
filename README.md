@@ -62,5 +62,6 @@ This extension uses other Firebase and Google Cloud Platform services, which hav
 
 This extension will operate with the following project IAM roles:
 
+- `secretmanager.secretAccessor` (Reason: Allows reading the ElevenLabs API key from Secret Manager)
 - `datastore.user` (Reason: Allows reading text from and writing audio paths to Cloud Firestore documents)
 - `storage.objectAdmin` (Reason: Allows writing generated speech audio files to Cloud Storage)

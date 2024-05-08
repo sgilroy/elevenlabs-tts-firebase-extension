@@ -40,6 +40,8 @@ billingRequired: true
 # Learn more in the docs:
 # https://firebase.google.com/docs/extensions/reference/extension-yaml#roles-field
 roles:
+  - role: secretmanager.secretAccessor
+    reason: Allows the extension to access the ElevenLabs API key.
   - role: datastore.user
     reason: Allows the extension to write the audio file paths to Cloud Firestore.
   - role: storage.objectAdmin
