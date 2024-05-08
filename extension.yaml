@@ -69,7 +69,7 @@ params:
     label: ElevenLabs API Key
     description: >-
       API key for ElevenLabs generative voice AI. You can get an API key by signing up at https://elevenlabs.io
-    type: string
+    type: secret
     required: true
 
   - param: LOCATION
