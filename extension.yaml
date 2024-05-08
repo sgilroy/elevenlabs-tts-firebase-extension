@@ -239,6 +239,6 @@ params:
       * 409 (Conflict)
       * 429 (Too Many Requests)
       * 5XX (Internal Server Errors)
-    type: number
+    type: string
     default: 2
     required: false
