@@ -48,7 +48,7 @@ export const elevenLabsTextToSpeech = functions.firestore
         });
 
         await snap.ref.update({
-          audioPath: `gs://${bucket.name}/${fileName}`,
+          audioPath: `gs://${config.bucketName}/${fileName}`,
         });
 
         return;
