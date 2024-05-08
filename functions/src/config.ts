@@ -10,6 +10,7 @@ interface Config {
   storagePath: string;
   enablePerDocumentOverrides: boolean;
   voice: string;
+  maxRetries: number;
 }
 
 const config: Config = {
@@ -22,6 +23,7 @@ const config: Config = {
   storagePath: process.env.STORAGE_PATH,
   enablePerDocumentOverrides: process.env.ENABLE_PER_DOCUMENT_OVERRIDES === "yes",
   voice: process.env.VOICE,
+  maxRetries: parseInt(process.env.MAX_RETRIES || "2"),
 };
 
 export default config;

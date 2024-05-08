@@ -32,7 +32,7 @@ export const elevenLabsTextToSpeech = functions.firestore
         : buildRequest({ text });
 
       const stream = await processText(request);
-      if (stream && stream.readableLength) {
+      if (stream) {
         const fileExtension = getFileExtension(outputFormat || config.outputFormat);
 
         const fileName = config.storagePath
@@ -52,6 +52,11 @@ export const elevenLabsTextToSpeech = functions.firestore
         });
 
         return;
+      } else {
+        logger.error("No audio stream returned from ElevenLabs");
+        await snap.ref.update({
+          generatingAudioFailed: true,
+        });
       }
     }
     return;
@@ -62,8 +67,8 @@ async function processText(request: GenerateAudioRequest) {
 
   // Performs the text-to-speech request
   try {
-    logger.log("Generating audio with request:", request);
-    response = await elevenlabs.generate(request);
+    logger.log("Generating audio with request:", request, { maxRetries: config.maxRetries });
+    response = await elevenlabs.generate(request, { maxRetries: config.maxRetries });
   } catch (e) {
     logger.error(e);
     throw e;

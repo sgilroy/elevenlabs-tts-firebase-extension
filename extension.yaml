@@ -224,3 +224,21 @@ params:
     type: string
     default: Rachel
     required: false
+
+  - param: MAX_RETRIES
+    label: Maximum retries
+    description: >-
+      Maximum number of retries for a failed audio conversion. If a request to generate audio
+      fails but it is deemed retriable, the extension will retry the request with exponential
+      backoff. A request will be retried as long as the request is deemed retriable and the
+      number of retry attempts has not grown larger than the configured retry limit (default: 2).
+
+      A request is deemed retriable when any of the following HTTP status codes is returned:
+
+      * 408 (Timeout)
+      * 409 (Conflict)
+      * 429 (Too Many Requests)
+      * 5XX (Internal Server Errors)
+    type: number
+    default: 2
+    required: false
