@@ -11,6 +11,8 @@ interface Config {
   enablePerDocumentOverrides: boolean;
   voice: string;
   maxRetries: number;
+  cacheControl: string;
+  includeCustomMetadata: boolean;
 }
 
 const config: Config = {
@@ -24,6 +26,8 @@ const config: Config = {
   enablePerDocumentOverrides: process.env.ENABLE_PER_DOCUMENT_OVERRIDES === "yes",
   voice: process.env.VOICE,
   maxRetries: parseInt(process.env.MAX_RETRIES || "2"),
+  cacheControl: process.env.CACHE_CONTROL,
+  includeCustomMetadata: process.env.INCLUDE_CUSTOM_METADATA === "yes",
 };
 
 export default config;
