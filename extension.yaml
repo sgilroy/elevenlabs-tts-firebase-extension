@@ -3,7 +3,7 @@
 
 # Identifier for your extension
 name: firestore-elevenlabs-tts
-version: 1.0.0
+version: 1.0.1
 specVersion: v1beta # Version of the Firebase Extensions specification
 
 icon: icon.png
