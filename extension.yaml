@@ -25,9 +25,18 @@ displayName: ElevenLabs TTS
 description: >-
   Converts Firestore documents to audio files stored in Cloud Storage using ElevenLabs generative voice AI.
 
-license: Apache-2.0 # https://spdx.org/licenses/
+license: Apache-2.0
 
 sourceUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension
+releaseNotesUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension/tree/master/CHANGELOG.md
+
+author:
+  authorName: Move Journey
+  url: https://movejourney.app
+
+contributors:
+  - authorName: Scott Gilroy
+    url: https://github.com/sgilroy
 
 billingRequired: true
 
@@ -44,6 +53,10 @@ roles:
     reason: Allows the extension to write the audio file paths to Cloud Firestore.
   - role: storage.objectAdmin
     reason: Allows the extension to write audio files to Cloud Storage.
+
+externalServices:
+  - name: ElevenLabs
+    pricingUri: https://elevenlabs.io/pricing
 
 # In the `resources` field, list each of your extension's functions, including the trigger for each function.
 # Learn more in the docs:
