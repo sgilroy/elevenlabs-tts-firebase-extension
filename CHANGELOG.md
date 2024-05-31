@@ -8,5 +8,5 @@
 
 ## Version 1.1.0
 
-- Add a param UPDATES_ENABLED (defaults to yes) to enable/disable generating
-  speech audio for Firestore documents which already have a `audioPath` field.
+- Add a param `UPDATES_ENABLED` (defaults to yes) to enable/disable generating
+  speech audio for Firestore documents which already have an `audioPath` field.
