@@ -13,6 +13,7 @@ interface Config {
   maxRetries: number;
   cacheControl: string;
   includeCustomMetadata: boolean;
+  updatesEnabled: boolean;
 }
 
 const config: Config = {
@@ -28,6 +29,7 @@ const config: Config = {
   maxRetries: parseInt(process.env.MAX_RETRIES || "2"),
   cacheControl: process.env.CACHE_CONTROL,
   includeCustomMetadata: process.env.INCLUDE_CUSTOM_METADATA === "yes",
+  updatesEnabled: process.env.UPDATES_ENABLED === "yes",
 };
 
 export default config;
