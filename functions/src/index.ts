@@ -29,7 +29,7 @@ export const elevenLabsTextToSpeech = functions.firestore
       snap?.data().text &&
       (!before || ["text", "outputFormat", "modelId", "voice"].some((p) => before[p] !== after[p])) &&
       // When updates are not enabled, only generate audio if there is no audioPath yet
-      (config.updatesEnabled || !after.audioPath)
+      (config.enableUpdates || !after.audioPath)
     ) {
       const { text, outputFormat, modelId, voice } = snap.data() as BuildRequestOptions;
 

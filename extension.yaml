@@ -279,7 +279,7 @@ params:
     default: yes
     required: true
 
-  - param: UPDATES_ENABLED
+  - param: ENABLE_UPDATES
     label: Enable updates
     description: >-
       If set to \"Yes\", the extension will update existing audio files if the document
