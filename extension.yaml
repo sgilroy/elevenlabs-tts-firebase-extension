@@ -3,7 +3,7 @@
 
 # Identifier for your extension
 name: firestore-elevenlabs-tts
-version: 1.2.1
+version: 1.2.2
 specVersion: v1beta # Version of the Firebase Extensions specification
 
 icon: icon.png
@@ -156,7 +156,7 @@ params:
     label: Storage bucket name
     description: >
       In which storage bucket do you want to keep the generated audio files?
-    type: selectResource
+    type: selectresource
     resourceType: storage.googleapis.com/Bucket
     example: my-project-12345.appspot.com
     validationRegex: ^([0-9a-z_.-]*)$

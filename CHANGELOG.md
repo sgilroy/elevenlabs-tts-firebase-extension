@@ -1,3 +1,7 @@
+## Version 1.2.2
+
+- Use the documented `selectresource` parameter type for `BUCKET_NAME`.
+
 ## Version 1.2.1
 
 - Update the Cloud Functions runtime configuration to Node.js 22.
