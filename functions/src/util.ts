@@ -1,10 +1,10 @@
-import { OutputFormat } from "elevenlabs/api";
+import { ElevenLabs } from "@elevenlabs/elevenlabs-js";
 import config from "./config";
 import { GenerateAudioRequest } from "./types";
 
 export interface BuildRequestOptions {
   text: string;
-  outputFormat?: OutputFormat;
+  outputFormat?: ElevenLabs.OutputFormat;
   modelId?: string;
   voice?: string;
 }
@@ -17,8 +17,8 @@ export function buildRequest({
 }: BuildRequestOptions): GenerateAudioRequest {
   return {
     text,
-    output_format: outputFormat || "mp3_44100_128",
-    model_id: modelId || "eleven_multilingual_v2",
+    outputFormat: outputFormat || "mp3_44100_128",
+    modelId: modelId || "eleven_multilingual_v2",
     voice: voice || "Rachel",
   };
 }

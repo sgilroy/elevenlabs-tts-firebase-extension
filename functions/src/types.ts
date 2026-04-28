@@ -1,5 +1,5 @@
-import { ElevenLabsClient } from "elevenlabs";
+import { ElevenLabs } from "@elevenlabs/elevenlabs-js";
 
-export type GenerateAudioRequest = ElevenLabsClient.GeneratAudioBulk & {
+export type GenerateAudioRequest = ElevenLabs.BodyTextToSpeechFull & {
   voice?: string;
 };
