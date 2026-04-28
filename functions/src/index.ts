@@ -2,7 +2,6 @@ import { ElevenLabsClient } from "elevenlabs";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
 import * as functions from "firebase-functions";
-import * as stream from "stream";
 import config from "./config";
 import { GenerateAudioRequest } from "./types";
 import { buildRequest, BuildRequestOptions, getFileExtension } from "./util";
@@ -15,7 +14,10 @@ const elevenlabs = new ElevenLabsClient({
   apiKey: config.elevenLabsApiKey, // Defaults to process.env.ELEVENLABS_API_KEY
 });
 
-logger.log("Initializing text-to-speech extension with config:", config);
+logger.log("Initializing text-to-speech extension with config:", {
+  ...config,
+  elevenLabsApiKey: config.elevenLabsApiKey ? "[REDACTED]" : "",
+});
 
 export const elevenLabsTextToSpeech = functions.firestore
   .document(`${config.collectionPath}/{docId}`)
@@ -42,8 +44,8 @@ export const elevenLabsTextToSpeech = functions.firestore
           })
         : buildRequest({ text });
 
-      const stream = await processText(request);
-      if (stream) {
+      const audioStream = await processText(request);
+      if (audioStream) {
         const fileExtension = getFileExtension(request.output_format);
 
         const fileName = config.storagePath
@@ -60,7 +62,7 @@ export const elevenLabsTextToSpeech = functions.firestore
         });
 
         await new Promise<void>((resolve, reject) => {
-          stream
+          audioStream
             .pipe(
               file.createWriteStream({
                 metadata: {
@@ -108,15 +110,35 @@ export const elevenLabsTextToSpeech = functions.firestore
   });
 
 async function processText(request: GenerateAudioRequest) {
-  let response: stream.Readable;
-
   // Performs the text-to-speech request
   try {
     logger.log("Generating audio with request:", request, { maxRetries: config.maxRetries });
-    response = await elevenlabs.generate(request, { maxRetries: config.maxRetries });
+    return await elevenlabs.generate(request, { maxRetries: config.maxRetries });
   } catch (e) {
-    logger.error(e);
-    throw e;
+    logger.error("Failed to generate audio with ElevenLabs", getSafeErrorDetails(e));
+    return null;
   }
-  return response;
+}
+
+function getSafeErrorDetails(error: unknown) {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      name: error.name,
+      statusCode: getErrorStatusCode(error),
+    };
+  }
+
+  return {
+    message: typeof error === "string" ? error : "Unknown ElevenLabs error",
+    statusCode: getErrorStatusCode(error),
+  };
+}
+
+function getErrorStatusCode(error: unknown) {
+  if (typeof error === "object" && error !== null && "statusCode" in error) {
+    return (error as { statusCode?: unknown }).statusCode;
+  }
+
+  return undefined;
 }
