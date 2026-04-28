@@ -49,6 +49,7 @@ This extension uses other Firebase and Google Cloud Platform services, which hav
 - Model ID: The ID of the ElevenLabs model to use for speech synthesis
 - Voice: The ID of the ElevenLabs voice to use for speech synthesis
 - Enable per document overrides: If set to \"Yes\", options for converting audio will be overwritten by fields in the document containing the text to be converted.
+- Enable updates: If set to \"Yes\", updated documents will regenerate audio. If set to \"No\", documents with an existing `audioPath` field will not regenerate audio.
 
 ## Cloud Functions
 

@@ -1,8 +1,9 @@
-import { ElevenLabsClient } from "elevenlabs";
+import { ElevenLabsClient } from "@elevenlabs/elevenlabs-js";
 import * as admin from "firebase-admin";
 import { FieldValue } from "firebase-admin/firestore";
-import * as functions from "firebase-functions";
-import * as stream from "stream";
+import { Readable } from "stream";
+import { ReadableStream } from "stream/web";
+import * as functions from "firebase-functions/v1";
 import config from "./config";
 import { GenerateAudioRequest } from "./types";
 import { buildRequest, BuildRequestOptions, getFileExtension } from "./util";
@@ -15,7 +16,10 @@ const elevenlabs = new ElevenLabsClient({
   apiKey: config.elevenLabsApiKey, // Defaults to process.env.ELEVENLABS_API_KEY
 });
 
-logger.log("Initializing text-to-speech extension with config:", config);
+logger.log("Initializing text-to-speech extension with config:", {
+  ...config,
+  elevenLabsApiKey: config.elevenLabsApiKey ? "[REDACTED]" : "",
+});
 
 export const elevenLabsTextToSpeech = functions.firestore
   .document(`${config.collectionPath}/{docId}`)
@@ -42,9 +46,9 @@ export const elevenLabsTextToSpeech = functions.firestore
           })
         : buildRequest({ text });
 
-      const stream = await processText(request);
-      if (stream) {
-        const fileExtension = getFileExtension(request.output_format);
+      const audioStream = await processText(request);
+      if (audioStream) {
+        const fileExtension = getFileExtension(request.outputFormat);
 
         const fileName = config.storagePath
           ? `${config.storagePath}/${snap.id}${fileExtension}`
@@ -60,7 +64,7 @@ export const elevenLabsTextToSpeech = functions.firestore
         });
 
         await new Promise<void>((resolve, reject) => {
-          stream
+          audioStream
             .pipe(
               file.createWriteStream({
                 metadata: {
@@ -73,8 +77,8 @@ export const elevenLabsTextToSpeech = functions.firestore
                           documentPath: snap.ref.path,
                           text: request.text,
                           voice: request.voice,
-                          modelId: request.model_id,
-                          outputFormat: request.output_format,
+                          modelId: request.modelId,
+                          outputFormat: request.outputFormat,
                         },
                       }
                     : {}),
@@ -108,15 +112,57 @@ export const elevenLabsTextToSpeech = functions.firestore
   });
 
 async function processText(request: GenerateAudioRequest) {
-  let response: stream.Readable;
-
   // Performs the text-to-speech request
   try {
     logger.log("Generating audio with request:", request, { maxRetries: config.maxRetries });
-    response = await elevenlabs.generate(request, { maxRetries: config.maxRetries });
+    const voiceId = await getVoiceId(request.voice || "Rachel");
+    const textToSpeechRequest = { ...request };
+    delete textToSpeechRequest.voice;
+    const audioStream = await elevenlabs.textToSpeech.convert(voiceId, textToSpeechRequest, {
+      maxRetries: config.maxRetries,
+    });
+    return Readable.fromWeb(audioStream as unknown as ReadableStream<Uint8Array>);
   } catch (e) {
-    logger.error(e);
-    throw e;
+    logger.error("Failed to generate audio with ElevenLabs", getSafeErrorDetails(e));
+    return null;
   }
-  return response;
+}
+
+async function getVoiceId(voice: string) {
+  if (/^[A-Za-z0-9]{20}$/.test(voice)) {
+    return voice;
+  }
+
+  const response = await elevenlabs.voices.search({ search: voice, pageSize: 100 });
+  const matchingVoice =
+    response.voices.find((v) => v.name?.toLowerCase() === voice.toLowerCase()) || response.voices[0];
+
+  if (!matchingVoice) {
+    throw new Error(`No ElevenLabs voice found matching "${voice}"`);
+  }
+
+  return matchingVoice.voiceId;
+}
+
+function getSafeErrorDetails(error: unknown) {
+  if (error instanceof Error) {
+    return {
+      message: error.message,
+      name: error.name,
+      statusCode: getErrorStatusCode(error),
+    };
+  }
+
+  return {
+    message: typeof error === "string" ? error : "Unknown ElevenLabs error",
+    statusCode: getErrorStatusCode(error),
+  };
+}
+
+function getErrorStatusCode(error: unknown) {
+  if (typeof error === "object" && error !== null && "statusCode" in error) {
+    return (error as { statusCode?: unknown }).statusCode;
+  }
+
+  return undefined;
 }

@@ -3,7 +3,7 @@
 
 # Identifier for your extension
 name: firestore-elevenlabs-tts
-version: 1.1.0
+version: 1.2.0
 specVersion: v1beta # Version of the Firebase Extensions specification
 
 icon: icon.png
@@ -28,7 +28,7 @@ description: >-
 license: Apache-2.0
 
 sourceUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension
-releaseNotesUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension/tree/master/CHANGELOG.md
+releaseNotesUrl: https://github.com/sgilroy/elevenlabs-tts-firebase-extension/tree/main/CHANGELOG.md
 
 author:
   authorName: Move Journey
