@@ -1,3 +1,7 @@
+## Version 1.2.1
+
+- Update the Cloud Functions runtime configuration to Node.js 22.
+
 ## Version 1.2.0
 
 - Add a param `ENABLE_UPDATES` (defaults to yes) to enable/disable generating

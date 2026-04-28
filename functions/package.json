@@ -11,6 +11,9 @@
     "integration-test": "(cd integration-tests && firebase emulators:exec jest -P demo-test)",
     "test": "jest"
   },
+  "engines": {
+    "node": "22"
+  },
   "main": "lib/index.js",
   "dependencies": {
     "@elevenlabs/elevenlabs-js": "^2.45.0",
